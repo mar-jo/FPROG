@@ -68,11 +68,11 @@ const tuple<string, int> pythagoras(const int x, const int y)
   auto square_x = square(x);
   auto square_y = square(y);
 
-  print(get<0>(square_x));
-  print(get<0>(square_y));
+  output << get<0>(square_x);
+  output << get<0>(square_y);
 
   auto z = squareroot (get<1>(square_x) + get<1>(square_y));
-  print(get<0>(z));
+  output << get<0>(z);
   output << "euklid:" << get<1>(z) << endl;
 
   return {output.str(), get<1>(z)};
