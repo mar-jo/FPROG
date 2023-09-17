@@ -7,12 +7,12 @@
 
 typedef std::complex<double> complex;
 
-auto print = [](const std::string& output)
+const auto print = [](const std::string& output)
 {
   std::cout << output;
 };
 
-auto square = [](const double& e) -> const std::tuple<std::string, double>
+const auto square = [](const double& e) -> const std::tuple<std::string, double>
 {
 	double dummy = e;
 	double dummy2 = e;
@@ -30,7 +30,7 @@ auto square = [](const double& e) -> const std::tuple<std::string, double>
   return {output.str(), e_value};
 };
 
-auto squareroot = [](const float& number) -> const float
+const auto squareroot = [](const float& number) -> const float
 {
     union Conv {
       float    f;
@@ -44,7 +44,7 @@ auto squareroot = [](const float& number) -> const float
     return 1/conv.f;
 };
 
-auto solve_quadratic_equation = [](const double& a)
+const auto solve_quadratic_equation = [](const double& a)
 {
   return [a](const double& b)
   {

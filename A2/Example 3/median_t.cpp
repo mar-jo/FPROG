@@ -4,13 +4,13 @@
 #include <tuple>
 #include <cmath>
 
-auto print = [](const std::string& output)
+const auto print = [](const std::string& output)
 {
   std::cout << output;
 };
 
 // Silly square function that is not immutable and not pure
-auto silly_square = [](const double& x) -> const std::tuple<std::string, double>
+const auto silly_square = [](const double& x) -> const std::tuple<std::string, double>
 {
     std::stringstream output;
     double result = 0;
@@ -26,7 +26,7 @@ auto silly_square = [](const double& x) -> const std::tuple<std::string, double>
 };
 
 // Helper function to calculate square root without using std::sqrt()
-auto square_root = [](const double& x)
+const auto square_root = [](const double& x)
 {
     return [x](const double epsilon = 1e-10)
     {
@@ -66,7 +66,7 @@ auto square_root = [](const double& x)
     };
 };
 
-auto calculate_median = [](const double& a)
+const auto calculate_median = [](const double& a)
 {
     return [a](const double& b)
     {

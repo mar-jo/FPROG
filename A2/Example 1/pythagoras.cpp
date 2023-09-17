@@ -4,12 +4,12 @@
 #include <tuple>
 #include <bits/stdc++.h>
 
-auto print = [](const std::string& output)
+const auto print = [](const std::string& output)
 {
   std::cout << output;
 };
 
-auto square = [](const int e) -> const std::tuple<std::string, int>
+const auto square = [](const int e) -> const std::tuple<std::string, int>
 {
 	double dummy = e;
 	double dummy2 = e;
@@ -27,7 +27,7 @@ auto square = [](const int e) -> const std::tuple<std::string, int>
   return {output.str(), e_value};
 };
 
-auto squareroot = [](const double x) -> const std::tuple<std::string, double>
+const auto squareroot = [](const double x) -> const std::tuple<std::string, double>
 {				/* computes the square root of x */
 
   if (x == 0)
@@ -61,7 +61,7 @@ auto squareroot = [](const double x) -> const std::tuple<std::string, double>
 };
 
 
-auto pythagoras = [](const int x) {
+const auto pythagoras = [](const int x) {
     return [x](const int y) -> const std::tuple<std::string, int> {
         std::stringstream output;
 

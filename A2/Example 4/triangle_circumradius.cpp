@@ -3,13 +3,13 @@
 #include <sstream>
 #include <tuple>
 
-auto print = [](const std::string& output)
+const auto print = [](const std::string& output)
 {
   std::cout << output;
 };
 
 // Helper function to calculate square root without using std::sqrt()
-auto square_root = [](const double& x)
+const auto square_root = [](const double& x)
 {
     return [x](const double epsilon = 1e-10)
     {
@@ -49,7 +49,7 @@ auto square_root = [](const double& x)
     };
 };
 
-auto calculate_circumradius = [](const double& a)
+const auto calculate_circumradius = [](const double& a)
 {
     return [a](const double& b)
     {
