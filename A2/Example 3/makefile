@@ -3,7 +3,7 @@ CXX       = clang++
 CXXFLAGS  = -g -std=c++17 -Wall
 
 $(PROGRAM): median_t.cpp
-	$(CXX) median_t.cpp -o $(PROGRAM)
+	$(CXX) $(CXXFLAGS) median_t.cpp -o $(PROGRAM)
 
 .PHONY: clean 
 

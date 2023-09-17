@@ -1,13 +1,15 @@
 #include <iostream>
 #include <sstream>
+#include <cstring>
 #include <tuple>
+#include <bits/stdc++.h>
 
-const void print(const std::string& output)
+auto print = [](const std::string& output)
 {
   std::cout << output;
-}
+};
 
-const std::tuple<std::string, int> square(const int e)
+auto square = [](const int e) -> const std::tuple<std::string, int>
 {
 	double dummy = e;
 	double dummy2 = e;
@@ -23,9 +25,9 @@ const std::tuple<std::string, int> square(const int e)
     
   output << "square:" << e_value << std::endl;
   return {output.str(), e_value};
-}
+};
 
-const std::tuple<std::string, double> squareroot(const double x)
+auto squareroot = [](const double x) -> const std::tuple<std::string, double>
 {				/* computes the square root of x */
 
   if (x == 0)
@@ -56,25 +58,26 @@ const std::tuple<std::string, double> squareroot(const double x)
 
   output << "guess:" << guess << std::endl;;
   return {output.str(), guess};
-}
+};
 
 
-const std::tuple<std::string, int> pythagoras(const int x, const int y)
-{
-  std::stringstream output;
+auto pythagoras = [](const int x) {
+    return [x](const int y) -> const std::tuple<std::string, int> {
+        std::stringstream output;
 
-  auto square_x = square(x);
-  auto square_y = square(y);
+        auto [message_x, result_x] = square(x);
+        auto [message_y, result_y] = square(y);
 
-  output << std::get<0>(square_x);
-  output << std::get<0>(square_y);
+        output << message_x;
+        output << message_y;
 
-  auto z = squareroot (std::get<1>(square_x) + std::get<1>(square_y));
-  output << std::get<0>(z);
-  output << "euklid:" << std::get<1>(z) << std::endl;
+        auto [message_z, result_z] = squareroot(result_x + result_y);
+        output << message_z;
+        output << "euklid:" << result_z << std::endl;
 
-  return {output.str(), std::get<1>(z)};
-}
+        return {output.str(), result_z};
+    };
+};
 
 int main (int argc, char *argv[])
 {
@@ -83,10 +86,10 @@ int main (int argc, char *argv[])
   int x = 3;
   int y = 4;
 
-  auto pythagoras_z = pythagoras(x, y);
-  print(std::get<0>(pythagoras_z));
+  auto [message_pythagoras_z, result_pythagoras_z] = pythagoras(x)(y);
+  print(message_pythagoras_z);
 
-  output << std::get<1>(pythagoras_z) << std::endl;
+  output << result_pythagoras_z << std::endl;
   output_string = output.str();
 
   print(output_string);

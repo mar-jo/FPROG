@@ -3,7 +3,7 @@ CXX       = clang++
 CXXFLAGS  = -g -std=c++17 -Wall
 
 $(PROGRAM): root_of_quadratic_function.cpp
-	$(CXX) root_of_quadratic_function.cpp -o $(PROGRAM)
+	$(CXX) $(CXXFLAGS) root_of_quadratic_function.cpp -o $(PROGRAM)
 
 .PHONY: clean 
 

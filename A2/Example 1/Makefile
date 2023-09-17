@@ -3,7 +3,7 @@ CXX       = clang++
 CXXFLAGS  = -g -std=c++17 -Wall
 
 $(PROGRAM): pythagoras.cpp
-	$(CXX) pythagoras.cpp -o $(PROGRAM)
+	$(CXX) $(CXXFLAGS) pythagoras.cpp -o $(PROGRAM)
 
 .PHONY: clean 
 

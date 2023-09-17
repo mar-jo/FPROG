@@ -3,7 +3,7 @@ CXX       = clang++
 CXXFLAGS  = -g -std=c++17 -Wall
 
 $(PROGRAM): circumcenter_innercenter_distance.cpp
-	$(CXX) circumcenter_innercenter_distance.cpp -o $(PROGRAM)
+	$(CXX) $(CXXFLAGS) circumcenter_innercenter_distance.cpp -o $(PROGRAM)
 
 .PHONY: clean 
 
