@@ -1,6 +1,7 @@
 #include <iostream>
 #include <functional>
 #include <numeric>
+#include <optional>
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 
@@ -211,6 +212,86 @@ auto howDidXWin = [](auto const board){
 
     return findInCollectionWithDefault(linesWithDescription, xDidNotWin, xWon).first; 
 };
+
+// Checkmark 1
+TEST_CASE("Difference in the number of Tokens between 2 Players")
+{
+    Board board{
+        {'X', 'X', 'X'},
+        {' ', 'O', ' '},
+        {' ', ' ', 'O'}
+    };
+
+    auto stringifyBoard = boardToString(board);
+    auto count_X = std::count(stringifyBoard.begin(), stringifyBoard.end(), 'X');
+    auto count_Y = std::count(stringifyBoard.begin(), stringifyBoard.end(), 'O');
+
+    CHECK_FALSE(abs(count_X - count_Y) > 1);
+}
+
+//Checkmark 2
+TEST_CASE("Check for correct tokens")
+{
+    Board board{
+        {'X', 'X', 'X'},
+        {' ', 'O', ' '},
+        {' ', ' ', 'O'}
+    };
+
+     auto stringifyBoard = boardToString(board);
+     CHECK(std::all_of(stringifyBoard.begin(), stringifyBoard.end(), [](char c) {
+        return c == 'X' || c == 'O' || c == ' ' || c == '\n';
+     }));
+}
+
+//Checkmark 3
+TEST_CASE("Check for wrong tokens")
+{
+    Board board{
+        {'X', 'X', 'X'},
+        {' ', 'O', 'Y'},
+        {' ', ' ', 'O'}
+    };
+
+     auto stringifyBoard = boardToString(board);
+     CHECK_FALSE(std::all_of(stringifyBoard.begin(), stringifyBoard.end(), [](char c) {
+        return c == 'X' || c == 'O' || c == ' ' || c == '\n';
+     }));
+}
+
+//Checkmark 4
+TEST_CASE("Board dimension is wrong")
+{
+    Board board{
+        {'X', 'X', 'X'},
+        {' ', 'O', 'Y'},
+        {' ', ' ', 'O', ' '}
+    };
+
+    auto isBoardOfCorrectDimensions = [](const Board& board)
+    {
+        return board.size() == 3 && all_of_collection(board, [](const Line& line){ return line.size() == 3; });
+    };
+
+    CHECK_FALSE(isBoardOfCorrectDimensions(board));
+}
+
+//Checkmark 5
+TEST_CASE("Board dimension is correct")
+{
+    Board board{
+        {'X', 'X', 'X'},
+        {' ', 'O', 'Y'},
+        {' ', ' ', 'O'}
+    };
+
+    auto isBoardOfCorrectDimensions = [](const Board& board)
+    {
+        return board.size() == 3 && all_of_collection(board, [](const Line& line){ return line.size() == 3; });
+    };
+
+    CHECK(isBoardOfCorrectDimensions(board));
+}
 
 TEST_CASE("lines"){
     Board board{
