@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <numeric>
+#include <iterator>
 #include <functional>
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "../doctest.h"
@@ -10,9 +12,12 @@ auto createBuckets = [](const size_t size)
     return std::vector<std::vector<float>>(size);
 };
 
-auto determineIndex = [](const float value, const size_t size)
+auto determineIndex = [](const float value)
 {
-    return static_cast<size_t>(value * size);
+    return [value](const size_t size)
+    {
+        return static_cast<size_t>(value * size);
+    };
 };
 
 auto fillDataIntoBuckets = [](const std::vector<float>& data)
@@ -20,7 +25,7 @@ auto fillDataIntoBuckets = [](const std::vector<float>& data)
     auto buckets = createBuckets(data.size());
     std::for_each(data.begin(), data.end(), [&](float value)
     {
-        buckets[determineIndex(value, data.size())].push_back(value);
+        buckets.at(determineIndex(value)(data.size())).push_back(value);
     });
 
     return buckets;
@@ -30,24 +35,25 @@ auto sortBuckets = [](const std::vector<std::vector<float>>& data)
 {
     auto sortedBuckets = data;
 
-    for(auto& bucket : sortedBuckets)
-    {
-        std::sort(bucket.begin(), bucket.end());
-    }
+    std::transform(data.begin(), data.end(), sortedBuckets.begin(), 
+                    [](const std::vector<float>& bucket) {
+                        std::vector<float> sorted = bucket;
+                        std::sort(sorted.begin(), sorted.end());
+                        return sorted;
+                    });
 
     return sortedBuckets;
 };
 
 auto concatenateToOneDimension = [](const std::vector<std::vector<float>>& data)
 {
-    std::vector<float> finalResult;
-
-    for(const auto& bucket : data)
-    {
-        std::copy(bucket.begin(), bucket.end(), std::back_inserter(finalResult));
-    } 
-
-    return finalResult;
+    return std::accumulate(data.begin(), data.end(), std::vector<float>(),
+                            [](const std::vector<float>& acc, const std::vector<float>& next) {
+                                std::vector<float> acc_copy = acc;
+                                
+                                acc_copy.insert(acc_copy.end(), next.begin(), next.end());
+                                return acc_copy;
+                            });
 };
 
 auto bucketSort = [](const std::vector<float>& data)
@@ -79,7 +85,7 @@ TEST_CASE("determineIndex")
 {
     SUBCASE("Test with two whole values")
     {
-        const size_t output = determineIndex(3.0f, static_cast<size_t>(2));
+        const size_t output = determineIndex(3.0f)(static_cast<size_t>(2));
         const size_t expected = 6;
 
         CHECK_EQ(expected, output);
@@ -87,7 +93,7 @@ TEST_CASE("determineIndex")
 
     SUBCASE("Test with float and size_t value")
     {
-        const size_t output = determineIndex(3.0f, static_cast<size_t>(2.4));
+        const size_t output = determineIndex(3.0f)(static_cast<size_t>(2.4));
         const size_t expected = static_cast<size_t>(3.0f * static_cast<size_t>(2.4));
 
         CHECK_EQ(expected, output);
@@ -101,13 +107,13 @@ TEST_CASE("fillDataIntoBuckets")
         const std::vector<float> data = {0.1f, 0.4f, 0.7f};
         auto buckets = fillDataIntoBuckets(data);
 
-        const size_t index = determineIndex(0.1f, data.size());
+        const size_t index = determineIndex(0.1f)(data.size());
         CHECK_EQ(1, buckets[index].size());
 
-        const size_t indexTwo = determineIndex(0.4f, data.size());
+        const size_t indexTwo = determineIndex(0.4f)(data.size());
         CHECK_EQ(1, buckets[indexTwo].size());
 
-        const size_t indexThree = determineIndex(0.7f, data.size());
+        const size_t indexThree = determineIndex(0.7f)(data.size());
         CHECK_EQ(1, buckets[indexThree].size());
     }
 
