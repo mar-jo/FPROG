@@ -8,15 +8,18 @@
 auto bubbleSort = [](const std::vector<int> &data) {
     std::vector<int> copy_data = data;
 
-    std::for_each(copy_data.begin(), copy_data.end() - 1, [&copy_data](const auto& it1) 
+    std::for_each(copy_data.begin(), copy_data.end() - 1, [&copy_data](const int& a) 
     {
-        std::for_each(it1 + 1, copy_data.end(), [&it1](const auto& it2) 
+        std::for_each(copy_data.begin() + 1, copy_data.end(), [&copy_data, &a](const int& b) 
         {
-            auto minimum = std::min(*it1, *it2);
-            auto maximum = std::max(*it1, *it2);
+            auto it_a = &a - copy_data.data();
+            auto it_b = &b - copy_data.data();
 
-            *it1 = minimum;
-            *it2 = maximum;
+            auto minimum = std::min(a, b);
+            auto maximum = std::max(a, b);
+
+            copy_data[it_a] = minimum;
+            copy_data[it_b] = maximum;
         });
     });
 
