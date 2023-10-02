@@ -15,25 +15,23 @@ std::function<std::vector<int>(const std::vector<int>&)> quickSort = [](const st
 
     int pivot = data.front();
 
-    std::vector<int> less;
-    std::vector<int> equal;
-    std::vector<int> greater;
+    std::vector<int> less, equal, greater;
 
-    std::accumulate(data.begin(), data.end(), std::make_tuple(std::ref(less), std::ref(equal), std::ref(greater)), [&pivot](const auto& acc, const int val) 
+    std::accumulate(data.begin(), data.end(), std::make_tuple(&less, &equal, &greater), [&pivot](const auto& acc, const int val) 
     {
         auto& [less, equal, greater] = acc;
 
         if (val < pivot)
         {
-            less.push_back(val);
+            less->push_back(val);
         }
         else if (val == pivot) 
         {
-            equal.push_back(val);
+            equal->push_back(val);
         }
         else
         {
-            greater.push_back(val);
+            greater->push_back(val);
         }
 
         return acc;
