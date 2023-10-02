@@ -17,12 +17,8 @@ auto findInsert = [](const std::vector<int>& data) {
 auto insertElement = [](const std::vector<int>& data) {
     return [&data](const int& value)
     {
-        std::vector<int> copy;
-        std::copy(data.begin(), data.end(), std::back_inserter(copy));
-
-        auto insertionPoint = findInsert(copy)(value);
-        copy.insert(insertionPoint, value);
-
+        std::vector<int> copy = data;
+        copy.insert(findInsert(copy)(value), value);
         return copy;
     };
 };
