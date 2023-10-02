@@ -1,29 +1,32 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <numeric>
 #include <functional>
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "../doctest.h"
 
 auto bubbleSort = [](const std::vector<int> &data) {
-    std::vector<int> copy_data = data;
-
-    std::for_each(copy_data.begin(), copy_data.end() - 1, [&copy_data](const int& a) 
+    return std::accumulate(data.begin(), data.end() - 1, data, [](const std::vector<int>& acc, const int& a) 
     {
-        std::for_each(copy_data.begin() + 1, copy_data.end(), [&copy_data, &a](const int& b) 
+        return std::accumulate(acc.begin() + 1, acc.end(), acc, [&a](const std::vector<int>& inner_acc, const int& b) 
         {
-            auto it_a = &a - copy_data.data();
-            auto it_b = &b - copy_data.data();
+            std::vector<int> new_data = inner_acc;
 
-            auto minimum = std::min(a, b);
-            auto maximum = std::max(a, b);
+            auto it_a = std::find(new_data.begin(), new_data.end(), a);
+            auto it_b = std::find(it_a + 1, new_data.end(), b);
 
-            copy_data[it_a] = minimum;
-            copy_data[it_b] = maximum;
+            if (it_b == new_data.end()) 
+            {
+                return new_data;
+            }
+
+            *it_a = std::min(a, *it_b);
+            *it_b = std::max(a, *it_b);
+
+            return new_data;
         });
     });
-
-    return copy_data;
 };
 
 TEST_CASE("bubbleSort")
