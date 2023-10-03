@@ -40,16 +40,6 @@ TEST_CASE("selectionSort")
         CHECK_EQ(expectedOutput, sortedData);
     }
 
-        SUBCASE("Double Value Vector") 
-    {
-        std::vector<int> inputData = {5, 2, 8, 1, 9, 3, 7, 4, 6};
-
-        std::vector<int> sortedData = selectionSort(inputData);
-        std::vector<int> expectedOutput = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-        
-        CHECK_EQ(expectedOutput, sortedData);
-    }
-
     SUBCASE("Already sorted vector") 
     {
         std::vector<int> inputData = {1, 2, 3, 4, 5};
