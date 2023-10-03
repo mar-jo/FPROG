@@ -9,7 +9,7 @@ auto swapElements = [](const std::vector<int>& data)
 {
     return [&data](const int a)
     {
-        return [&data, &a](const int b)
+        return [&data, a](const int b)
         {
             std::vector<int> new_data = data;
 
@@ -30,7 +30,7 @@ auto swapElements = [](const std::vector<int>& data)
 
 };
 
-auto bubbleUp = [&](const std::vector<int>& data) 
+auto bubbleUp = [](const std::vector<int>& data) 
 {
     return [&data](const int a)
     {
@@ -41,7 +41,7 @@ auto bubbleUp = [&](const std::vector<int>& data)
     };
 };
 
-auto bubbleSort = [&](const std::vector<int>& data)
+auto bubbleSort = [](const std::vector<int>& data)
 {
     return std::accumulate(data.begin(), data.end() - 1, data, [&](const std::vector<int>& acc, const int& a) 
     {
