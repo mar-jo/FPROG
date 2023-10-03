@@ -1,5 +1,4 @@
 #include <iostream>
-#include <string>
 #include <vector>
 #include <numeric>
 #include <iterator>
@@ -14,7 +13,7 @@ auto createBuckets = [](const size_t size)
 
 auto determineIndex = [](const float value)
 {
-    return [value](const size_t size)
+    return [&value](const size_t size)
     {
         return static_cast<size_t>(value * size);
     };

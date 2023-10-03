@@ -1,17 +1,17 @@
 #include <iostream>
-#include <string>
 #include <vector>
 #include <numeric>
 #include <functional>
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "../doctest.h"
 
-auto bubbleSort = [](const std::vector<int> &data) {
-    return std::accumulate(data.begin(), data.end() - 1, data, [](const std::vector<int>& acc, const int& a) 
+auto swapElements = [](const std::vector<int>& data)
+{
+    return [&data](const int a)
     {
-        return std::accumulate(acc.begin() + 1, acc.end(), acc, [&a](const std::vector<int>& inner_acc, const int& b) 
+        return [&data, &a](const int b)
         {
-            std::vector<int> new_data = inner_acc;
+            std::vector<int> new_data = data;
 
             auto it_a = std::find(new_data.begin(), new_data.end(), a);
             auto it_b = std::find(it_a + 1, new_data.end(), b);
@@ -25,9 +25,30 @@ auto bubbleSort = [](const std::vector<int> &data) {
             *it_b = std::max(a, *it_b);
 
             return new_data;
+        };
+    };
+
+};
+
+auto bubbleUp = [&](const std::vector<int>& data) 
+{
+    return [&data](const int a)
+    {
+        return std::accumulate(data.begin() + 1, data.end(), data, [&a](const std::vector<int>& inner_acc, const int& b) 
+        {
+            return swapElements(inner_acc)(a)(b);
         });
+    };
+};
+
+auto bubbleSort = [&](const std::vector<int>& data)
+{
+    return std::accumulate(data.begin(), data.end() - 1, data, [&](const std::vector<int>& acc, const int& a) 
+    {
+        return bubbleUp(acc)(a);
     });
 };
+
 
 TEST_CASE("bubbleSort")
 {
