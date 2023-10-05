@@ -6,17 +6,26 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "../doctest.h"
 
-auto selectionSort = [](const std::vector<int>& data) -> std::vector<int>
+auto calculateRemainingElements = [](const std::vector<int>& data)
 {
-    return std::accumulate(data.begin(), data.end(), std::vector<int>(), [&](const std::vector<int>& acc, const int&)
+    return [&data](const std::vector<int>& acc) -> std::vector<int>
     {
-        std::vector<int> copy_acc = acc;
         std::vector<int> remaining_elements;
-        
+
         std::copy_if(data.begin(), data.end(), std::back_inserter(remaining_elements), [&](const int& val) 
         {
-            return std::find(copy_acc.begin(), copy_acc.end(), val) == copy_acc.end();
+            return std::find(acc.begin(), acc.end(), val) == acc.end();
         });
+
+        return remaining_elements;
+    };
+};
+
+auto findMinElement = [](const std::vector<int>& acc)
+{
+    return [acc](const std::vector<int>& remaining_elements) -> std::vector<int>
+    {
+        std::vector<int> copy_acc = acc;
 
         if (!remaining_elements.empty()) 
         {
@@ -25,6 +34,14 @@ auto selectionSort = [](const std::vector<int>& data) -> std::vector<int>
         }
 
         return copy_acc;
+    };
+};
+
+auto selectionSort = [](const std::vector<int>& data) -> std::vector<int>
+{
+    return std::accumulate(data.begin(), data.end(), std::vector<int>(), [&](const std::vector<int>& acc, const int&)
+    {
+        return findMinElement(acc)(calculateRemainingElements(data)(acc));
     });
 };
 

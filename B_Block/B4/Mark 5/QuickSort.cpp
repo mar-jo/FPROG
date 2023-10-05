@@ -2,9 +2,36 @@
 #include <string>
 #include <vector>
 #include <numeric>
+#include <tuple>
 #include <functional>
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "../doctest.h"
+
+auto splitData = [](const std::vector<int>& data)
+{
+    return [&data](const int pivot) -> std::tuple<std::vector<int>, std::vector<int>>
+    {
+        std::vector<int> less, greater;
+
+        std::accumulate(data.begin() + 1, data.end(), std::make_tuple(&less, &greater), [&pivot](const auto& acc, const int val) 
+        {
+            auto& [copy_less, copy_greater] = acc;
+
+            if (val <= pivot)
+            {
+                copy_less->push_back(val);
+            }
+            else
+            {
+                copy_greater->push_back(val);
+            }
+
+            return acc;
+        });
+
+        return {less, greater};
+    };
+};
 
 std::function<std::vector<int>(const std::vector<int>&)> quickSort = [](const std::vector<int>& data) -> std::vector<int> 
 {
@@ -14,24 +41,7 @@ std::function<std::vector<int>(const std::vector<int>&)> quickSort = [](const st
     }
 
     int pivot = data.front();
-
-    std::vector<int> less, greater;
-
-    std::accumulate(data.begin() + 1, data.end(), std::make_tuple(&less, &greater), [&pivot](const auto& acc, const int val) 
-    {
-        auto& [copy_less, copy_greater] = acc;
-
-        if (val <= pivot)
-        {
-            copy_less->push_back(val);
-        }
-        else
-        {
-            copy_greater->push_back(val);
-        }
-
-        return acc;
-    });
+    auto [less, greater] = splitData(data)(pivot);
 
     auto sorted_less = quickSort(less);
     auto sorted_greater = quickSort(greater);

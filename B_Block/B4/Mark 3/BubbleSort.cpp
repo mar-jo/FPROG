@@ -49,7 +49,6 @@ auto bubbleSort = [](const std::vector<int>& data)
     });
 };
 
-
 TEST_CASE("bubbleSort")
 {
     SUBCASE("Randomized Vector") 
