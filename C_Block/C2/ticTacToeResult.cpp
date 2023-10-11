@@ -480,81 +480,95 @@ auto setLine = [](const char& token) -> Line
     return Line(3, token);
 };
 
-auto setColumn = [](const Board& board, const int columnIndex, const char& token) -> Board 
+auto setColumn = [](const Board& board)
 {
-    Board modifiedBoard = board;
-
-    std::transform(board.begin(), board.end(), modifiedBoard.begin(), [columnIndex, token](const Line& line) 
+    return [&board](const int columnIndex)
     {
-        Line modifiedLine = line;
-        modifiedLine[columnIndex] = token;
-        return modifiedLine;
-    });
-
-    return modifiedBoard;
-};
-
-
-auto setDiagonal(const Board& board, const bool mainDiagonal, const char token) -> Board
-{
-    Board modifiedBoard = board;
-    int position = 0;
-
-    std::transform(board.begin(), board.end(), modifiedBoard.begin(), 
-        [mainDiagonal, token, &position](const Line& line) 
+        return [&board, columnIndex](const char& token) -> Board
         {
-            Line updatedLine = line;
-            if (mainDiagonal) 
-            {
-                updatedLine[position++] = token;
-            }
-            else 
-            {
-                updatedLine[2 - position++] = token;
-            }
+            Board copy_board = board;
 
-            return updatedLine;
-        }
-    );
+            std::transform(board.begin(), board.end(), copy_board.begin(), [columnIndex, token](const Line& line) 
+            {
+                Line copy_line = line;
 
-    return modifiedBoard;
+                copy_line[columnIndex] = token;
+                return copy_line;
+            });
+
+            return copy_board;
+        };
+    };
 };
 
-auto placeOpposingTokens = [](const Board& board, const char token) -> Board
+
+auto setDiagonal(const Board& board)
 {
-    static std::random_device rd;
-    static std::mt19937 g(rd());
-
-    Board copy_board = board;
-
-    std::vector<std::pair<int, int>> allPositions(3 * 3);
-
-    int index = 0;
-    std::generate(allPositions.begin(), allPositions.end(), [&index]() 
+    return [&board](const bool mainDiagonal)
     {
-        auto current = std::make_pair(index / 3, index % 3);
-        ++index;
-        return current;
-    });
+        return [&board, mainDiagonal](const char token) -> Board
+        {
+            Board modifiedBoard = board;
+            int position = 0;
 
-    std::transform(allPositions.begin(), allPositions.end(), allPositions.begin(), [](std::pair<int, int>& p) 
+            std::transform(board.begin(), board.end(), modifiedBoard.begin(), [mainDiagonal, token, &position](const Line& line) 
+            {
+                Line updatedLine = line;
+                if (mainDiagonal) 
+                {
+                    updatedLine[position++] = token;
+                }
+                else 
+                {
+                    updatedLine[2 - position++] = token;
+                }
+
+                return updatedLine;
+            });
+
+            return modifiedBoard;
+        };
+    };
+};
+
+auto placeOpposingTokens = [](const Board& board)
+{
+    return [&board](const char token) -> Board
     {
-        return std::make_pair(p.first / 3, p.second % 3);
-    });
+        static std::random_device rd;
+        static std::mt19937 g(rd());
 
-    std::vector<std::pair<int, int>> emptyPositions;
+        Board copy_board = board;
 
-    std::copy_if(allPositions.begin(), allPositions.end(), std::back_inserter(emptyPositions), [&copy_board](const std::pair<int, int>& pos) 
-    {
-        return copy_board.at(pos.first).at(pos.second) == ' ';
-    });
+        std::vector<std::pair<int, int>> allPositions(3 * 3);
 
-    std::shuffle(emptyPositions.begin(), emptyPositions.end(), g);
+        int index = 0;
+        std::generate(allPositions.begin(), allPositions.end(), [&index]() 
+        {
+            auto current = std::make_pair(index / 3, index % 3);
+            ++index;
+            return current;
+        });
 
-    copy_board.at(emptyPositions[0].first).at(emptyPositions[0].second) = token;
-    copy_board.at(emptyPositions[1].first).at(emptyPositions[1].second) = token;
+        std::transform(allPositions.begin(), allPositions.end(), allPositions.begin(), [](std::pair<int, int>& p) 
+        {
+            return std::make_pair(p.first / 3, p.second % 3);
+        });
 
-    return copy_board;
+        std::vector<std::pair<int, int>> emptyPositions;
+
+        std::copy_if(allPositions.begin(), allPositions.end(), std::back_inserter(emptyPositions), [&copy_board](const std::pair<int, int>& pos) 
+        {
+            return copy_board.at(pos.first).at(pos.second) == ' ';
+        });
+
+        std::shuffle(emptyPositions.begin(), emptyPositions.end(), g);
+
+        copy_board.at(emptyPositions.at(0).first).at(emptyPositions.at(0).second) = token;
+        copy_board.at(emptyPositions.at(1).first).at(emptyPositions.at(1).second) = token;
+
+        return copy_board;
+    };
 };
 
 
@@ -580,68 +594,71 @@ auto generateWinningBoard = []() -> Board
     }
     else if (type == 1) 
     {
-        board = setColumn(board, index, token);
+        board = setColumn(board)(index)(token);
     } 
     else 
     {
-        board = setDiagonal(board, index == 0, token);
+        board = setDiagonal(board)(index == 0)(token); // hacky
     }
 
-    return placeOpposingTokens(board, otherToken);
+    return placeOpposingTokens(board)(otherToken);
 };
 
-auto hasPlayerWon = [](const Board& board, const char player) 
+auto hasPlayerWon = [](const Board& board) 
 {
-    // ROW
-    if (std::any_of(board.begin(), board.end(), [player](const Line& line) 
+    return [&board](const char player) -> bool
     {
-        return std::count(line.begin(), line.end(), player) == 3;
-    }))
-    {
-        return true;
-    }
-
-    // COLUMN
-    std::array<int, 3> columnIndices = {0, 1, 2};
-
-    if (std::any_of(columnIndices.begin(), columnIndices.end(), [&board, player](int columnIndex) 
+        // ROW
+        if (std::any_of(board.begin(), board.end(), [player](const Line& line) 
         {
-            return std::count_if(board.begin(), board.end(), 
-                [columnIndex, player](const Line& line) 
-                {
-                    return line[columnIndex] == player;
-                }) == 3;
+            return std::count(line.begin(), line.end(), player) == 3;
         }))
-    {
-        return true;
-    }
-
-    // MAIN DIAG
-    if (std::all_of(board.begin(), board.end(), [player, &board](const Line& line) 
         {
-            auto index = std::distance(board.begin(), std::find(board.begin(), board.end(), line));
-            return line[index] == player;
-        }))
-    {
-        return true;
-    }
+            return true;
+        }
 
-    // SECONDARY DIAG
-    if (std::all_of(board.begin(), board.end(), [player, &board](const Line& line)
+        // COLUMN
+        std::array<int, 3> columnIndices = {0, 1, 2};
+
+        if (std::any_of(columnIndices.begin(), columnIndices.end(), [&board, player](int columnIndex) 
+            {
+                return std::count_if(board.begin(), board.end(), 
+                    [columnIndex, player](const Line& line) 
+                    {
+                        return line[columnIndex] == player;
+                    }) == 3;
+            }))
         {
-            auto index = std::distance(board.begin(), std::find(board.begin(), board.end(), line));
-            return line[2 - index] == player;
-        }))
-    {
-        return true;
-    }
+            return true;
+        }
 
-    return false;
+        // MAIN DIAG
+        if (std::all_of(board.begin(), board.end(), [player, &board](const Line& line) 
+            {
+                auto index = std::distance(board.begin(), std::find(board.begin(), board.end(), line));
+                return line[index] == player;
+            }))
+        {
+            return true;
+        }
+
+        // SECONDARY DIAG
+        if (std::all_of(board.begin(), board.end(), [player, &board](const Line& line)
+            {
+                auto index = std::distance(board.begin(), std::find(board.begin(), board.end(), line));
+                return line[2 - index] == player;
+            }))
+        {
+            return true;
+        }
+
+        return false;
+    };
 };
 
 auto isWinningBoard = [](const Board& board) -> bool
 {
-    return hasPlayerWon(board, 'X') || hasPlayerWon(board, 'O');
+    return hasPlayerWon(board)('X') || hasPlayerWon(board)('O');
 };
 
 TEST_CASE("Generate Winning Board [Property Testing]") 
