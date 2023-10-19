@@ -13,24 +13,30 @@
 
 using Matrix = std::vector<std::vector<double>>;
 using Result = std::optional<Matrix>;
+using Determinant = std::optional<double>;
 
-auto determinant = [](const Matrix& matrix) -> double
+auto determinant = [](const Matrix& matrix) -> Determinant
 {
+    if(matrix.size() != 2 && matrix.at(0).size() != 2)
+    {
+        return std::nullopt;
+    }
+
     return matrix.at(0).at(0) * matrix.at(1).at(1) - matrix.at(0).at(1) * matrix.at(1).at(0);
 };
 
 auto invertMatrix = [](const Matrix& matrix) -> Result 
 {
-    double det = determinant(matrix);
+    Determinant det = determinant(matrix);
 
-    if (det == 0) 
+    if (!det.has_value() || det.value() == 0) 
     {
         return std::nullopt;
     }
 
     Matrix inverted = {
-        {matrix.at(1).at(1) / det, -matrix.at(0).at(1) / det},
-        {-matrix.at(1).at(0) / det, matrix.at(0).at(0) / det}
+        {matrix.at(1).at(1) / det.value(), -matrix.at(0).at(1) / det.value()},
+        {-matrix.at(1).at(0) / det.value(), matrix.at(0).at(0) / det.value()}
     };
 
     return inverted;
