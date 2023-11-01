@@ -91,6 +91,12 @@
         "shared_mutex": "cpp",
         "typeindex": "cpp",
         "valarray": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "format": "cpp",
+        "locale": "cpp",
+        "ranges": "cpp",
+        "span": "cpp",
+        "xlocbuf": "cpp",
+        "xlocmes": "cpp"
     }
 }
